@@ -10,6 +10,8 @@ Features
 * Blockquotes - Parses quoted text (`> Quote`) as distinct elements.
 * Images - Recognizes inline images (`![alt text](url)`).
 
+The parser processes Markdown into an Abstract Syntax Tree, which can be used for rendering Markdown as HTML, analyzing document structure, or exporting to other formats or editing a markdown file.
+
 ## Installation
 soon.
 
