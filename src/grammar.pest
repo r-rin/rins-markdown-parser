@@ -1,1 +1,44 @@
-field = { (ASCII_DIGIT | "." | "-")+ }
+WHITESPACE = _{SPACE_SEPARATOR | "\t"}
+
+markdown = { SOI ~ (block ~ NEWLINE*)* ~ EOI }
+
+//TODO: list, code_block and etc.
+block = _{
+    heading
+    | paragraph
+}
+
+paragraph = {
+    (text ~ NEWLINE?)+
+}
+
+//TODO: bold, italic, inline_code
+text = _{
+    plain_text
+}
+
+plain_text = {
+    (!(NEWLINE | "#") ~ ANY)+
+}
+
+heading = _{
+    heading1
+    | heading2
+    | heading3
+}
+
+heading1 = @{
+    "#" ~ WHITESPACE ~ single_line_text 
+}
+
+heading2 = @{
+    "##" ~ WHITESPACE ~ single_line_text 
+}
+
+heading3 = @{
+    "###" ~ WHITESPACE ~ single_line_text 
+}
+
+single_line_text = ${ 
+    (!NEWLINE ~ ANY)+
+}
