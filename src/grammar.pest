@@ -1,44 +1,117 @@
-WHITESPACE = _{SPACE_SEPARATOR | "\t"}
+ws = _{ SPACE_SEPARATOR | "\t" }
 
-markdown = { SOI ~ (block ~ NEWLINE*)* ~ EOI }
+markdown = { SOI ~ (block ~ empty_line*)* ~ EOI }
 
-//TODO: list, code_block and etc.
+empty_line = {
+	NEWLINE
+}
+
 block = _{
-    heading
-    | paragraph
+  heading
+  | quote
+  | code_block
+  | horizontal_rule
+  | paragraph
 }
 
+horizontal_rule = {
+    "---" ~ ws* ~ (NEWLINE | EOI)
+}
+
+code_block = @{
+    "```" ~ (code_lang ~ ws* ~ NEWLINE)? ~ code_content ~ NEWLINE? ~ "```"
+}
+
+code_lang = ${
+    ws* ~ ('a'..'z' | 'A'..'Z')+
+}
+
+code_content = ${
+    (!("```") ~ ANY)+
+}
+
+quote =  {
+    ">" ~ paragraph
+}
+
+//TODO: fix an issue when there's a block after a paragraph without a NEWLINE
 paragraph = {
-    (text ~ NEWLINE?)+
+	(text ~ paragraph_break?)+ 
 }
 
-//TODO: bold, italic, inline_code
+paragraph_break = {
+    NEWLINE
+}
+
 text = _{
     plain_text
+  | escaped
+  | styled_text
 }
 
-plain_text = {
-    (!(NEWLINE | "#") ~ ANY)+
+styled_text = _{
+    escaped* ~ (bold | underline | italic | strikethrough | content) ~ escaped*
+}
+
+strikethrough = {
+    "~~" ~ (styled_text)+ ~ "~~"
+}
+
+underline = {
+    "__" ~ (styled_text)+ ~ "__"
+}
+
+bold = {
+    "**" ~ (styled_text)+ ~ "**"
+}
+
+italic = {
+    ("*" ~ (styled_text)+ ~ "*")
+  | ("_" ~ (styled_text)+ ~ "_")
+}
+
+content = @{
+    (!exclude_pt ~ ANY)+
+}
+
+escaped = @{
+    "\\" ~ (!ws ~ ANY)
+}
+
+plain_text = @{
+    !exclude_pt ~ (!NEWLINE ~ ANY)+
+}
+
+exclude_pt = _{
+  escaped
+  | heading
+  | quote
+  | code_block
+  | horizontal_rule
+  | NEWLINE
+  | "*"
+  | "~~"
+  | "_"
 }
 
 heading = _{
     heading1
-    | heading2
-    | heading3
+  | heading2
+  | heading3
 }
 
 heading1 = @{
-    "#" ~ WHITESPACE ~ single_line_text 
+    "#" ~ ws ~ single_line_text
 }
 
 heading2 = @{
-    "##" ~ WHITESPACE ~ single_line_text 
+    "##" ~ ws ~ single_line_text
 }
 
 heading3 = @{
-    "###" ~ WHITESPACE ~ single_line_text 
+    "###" ~ ws ~ single_line_text
 }
 
-single_line_text = ${ 
+single_line_text = _{
     (!NEWLINE ~ ANY)+
 }
