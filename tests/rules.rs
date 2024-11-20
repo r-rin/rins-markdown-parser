@@ -1,5 +1,38 @@
 use rins_markdown_parser::*;
 
+fn get_headers_start_length(rule: Rule) -> usize {
+    match rule {
+        Rule::heading1 => 1,
+        Rule::heading2 => 2,
+        Rule::heading3 => 3,
+        _ => 0,
+    }
+}
+
+fn check_header(rule: Rule, header_string: &str) {
+    let result = parse_by_rule(rule, header_string).expect("An error occured while parsing");
+
+    for pair in result {
+        if pair.as_rule() == Rule::heading1 {
+            // Checking if the whole string passed
+            println!("Read: {}", pair.as_str());
+            assert_eq!(header_string, pair.as_str());
+
+            let inner_pairs = pair.into_inner();
+            let header_text: Vec<&str> = inner_pairs
+                .filter(|pair| pair.as_rule() == Rule::single_line_text)
+                .map(|pair| pair.as_str())
+                .collect();
+
+            for text in &header_text {
+                println!("single_line_text content: {}", *text);
+                let string_start: usize = get_headers_start_length(rule) + 1;
+                assert_eq!(*text, &header_string[string_start..]);
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -79,7 +112,7 @@ mod tests {
             assert_eq!(char_pair.as_str(), "\\");
         }
 
-        return Ok(());
+        Ok(())
     }
 
     #[test]
@@ -592,38 +625,5 @@ mod tests {
         assert_eq!(eoi.as_rule(), Rule::EOI);
 
         Ok(())
-    }
-}
-
-fn get_headers_start_length(rule: Rule) -> usize {
-    match rule {
-        Rule::heading1 => 1,
-        Rule::heading2 => 2,
-        Rule::heading3 => 3,
-        _ => 0,
-    }
-}
-
-fn check_header(rule: Rule, header_string: &str) {
-    let result = parse_by_rule(rule, header_string).expect("An error occured while parsing");
-
-    for pair in result {
-        if pair.as_rule() == Rule::heading1 {
-            // Checking if the whole string passed
-            println!("Read: {}", pair.as_str());
-            assert_eq!(header_string, pair.as_str());
-
-            let inner_pairs = pair.into_inner();
-            let header_text: Vec<&str> = inner_pairs
-                .filter(|pair| pair.as_rule() == Rule::single_line_text)
-                .map(|pair| pair.as_str())
-                .collect();
-
-            for text in &header_text {
-                println!("single_line_text content: {}", *text);
-                let string_start: usize = get_headers_start_length(rule) + 1;
-                assert_eq!(*text, &header_string[string_start..]);
-            }
-        }
     }
 }
