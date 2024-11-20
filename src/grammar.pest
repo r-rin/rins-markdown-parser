@@ -15,7 +15,7 @@ block = _{
 }
 
 horizontal_rule = {
-    "---" ~ ws* ~ (NEWLINE | EOI)
+    ("---"|"***"|"–––") ~ ws* ~ (NEWLINE | EOI)
 }
 
 code_block = @{
@@ -34,12 +34,15 @@ quote =  {
     ">" ~ paragraph
 }
 
-//TODO: fix an issue when there's a block after a paragraph without a NEWLINE
 paragraph = {
-	(text ~ paragraph_break?)+ 
+	paragraph_line+ 
 }
 
-paragraph_break = {
+paragraph_line = {
+	text+ ~ paragraph_break?
+}
+
+paragraph_break = _{
     NEWLINE
 }
 
@@ -50,7 +53,27 @@ text = _{
 }
 
 styled_text = _{
-    escaped* ~ (bold | underline | italic | strikethrough | content) ~ escaped*
+    escaped* ~ (bold | underline | italic | strikethrough | inline_image | inline_link | content) ~ escaped*
+}
+
+inline_image = {
+	"![" ~ alt_text ~ "](" ~ url ~ ")"
+}
+
+inline_link = {
+	"[" ~ link_text ~ "](" ~ url ~ ")"
+}
+
+link_text = {
+	(!"]" ~ ANY)+
+}
+
+alt_text = {
+	(!"]" ~ ANY)+
+}
+
+url = {
+	(!")" ~ ANY)+
 }
 
 strikethrough = {
@@ -71,7 +94,7 @@ italic = {
 }
 
 content = @{
-    (!exclude_pt ~ ANY)+
+    (!(exclude_styles | exclude_block_elems) ~ ANY)+
 }
 
 escaped = @{
@@ -79,19 +102,28 @@ escaped = @{
 }
 
 plain_text = @{
-    !exclude_pt ~ (!NEWLINE ~ ANY)+
+    !exclude_block_elems ~ (!exclude_styles ~ char)+
 }
 
-exclude_pt = _{
+char = {
+	ANY
+}
+
+exclude_styles = _{
+  NEWLINE
+  | "*"
+  | "~~"
+  | "_"
+  | inline_link
+  | inline_image
+}
+
+exclude_block_elems = _{
   escaped
   | heading
   | quote
   | code_block
   | horizontal_rule
-  | NEWLINE
-  | "*"
-  | "~~"
-  | "_"
 }
 
 heading = _{
@@ -112,6 +144,6 @@ heading3 = @{
     "###" ~ ws ~ single_line_text
 }
 
-single_line_text = _{
-    (!NEWLINE ~ ANY)+
+single_line_text = ${
+    (!NEWLINE ~ ANY)+ ~ NEWLINE
 }
