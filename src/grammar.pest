@@ -18,16 +18,16 @@ horizontal_rule = {
     ("---"|"***"|"–––") ~ ws* ~ (NEWLINE | EOI)
 }
 
-code_block = @{
+code_block = {
     "```" ~ (code_lang ~ ws* ~ NEWLINE)? ~ code_content ~ NEWLINE? ~ "```"
 }
 
-code_lang = ${
+code_lang = {
     ws* ~ ('a'..'z' | 'A'..'Z')+
 }
 
-code_content = ${
-    (!("```") ~ ANY)+
+code_content = {
+    (!(NEWLINE? ~ "```") ~ ANY)+
 }
 
 quote =  {
@@ -133,15 +133,15 @@ heading = _{
 }
 
 heading1 = {
-    "#" ~ ws ~ single_line_text ~ NEWLINE 
+    "#" ~ ws ~ single_line_text ~ NEWLINE?
 }
 
 heading2 = {
-    "##" ~ ws ~ single_line_text ~ NEWLINE 
+    "##" ~ ws ~ single_line_text ~ NEWLINE? 
 }
 
 heading3 = {
-    "###" ~ ws ~ single_line_text ~ NEWLINE 
+    "###" ~ ws ~ single_line_text ~ NEWLINE?
 }
 
 single_line_text = {
