@@ -450,6 +450,119 @@ mod tests {
 
         Ok(())
     }
+
+    #[test]
+    fn check_markdown() -> Result<()> {
+        let input = "# Hello this is my 1st post!\n–––\n\nThis code prints \"Hello world\":\n```py\nprint(\"Hello world!\")\n```\n\nThis is **bold** text!\nThat's all. Bye!";
+    
+        let mut pairs = parse_by_rule(Rule::markdown, input)?;
+    
+        let pair = pairs.next().ok_or_else(|| anyhow!("Expected a markdown root, but found none"))?;
+        assert_eq!(pair.as_rule(), Rule::markdown);
+    
+        let mut markdown_inner = pair.into_inner();
+    
+        let heading1 = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected heading1, but found none"))?;
+        assert_eq!(heading1.as_rule(), Rule::heading1);
+        let heading_text = heading1.into_inner().next().ok_or_else(|| anyhow!("Expected heading text"))?;
+        assert_eq!(heading_text.as_str(), "Hello this is my 1st post!");
+    
+        let horizontal_rule = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected horizontal_rule, but found none"))?;
+        assert_eq!(horizontal_rule.as_rule(), Rule::horizontal_rule);
+        assert_eq!(horizontal_rule.as_str().trim(), "–––");
+    
+        let empty_line1 = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected empty_line, but found none"))?;
+        assert_eq!(empty_line1.as_rule(), Rule::empty_line);
+    
+        let paragraph1 = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected paragraph, but found none"))?;
+        assert_eq!(paragraph1.as_rule(), Rule::paragraph);
+        let mut paragraph1_inner = paragraph1.into_inner();
+    
+        let paragraph_line1 = paragraph1_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected paragraph_line, but found none"))?;
+        assert_eq!(paragraph_line1.as_rule(), Rule::paragraph_line);
+        let plain_text1 = paragraph_line1
+            .into_inner()
+            .next()
+            .ok_or_else(|| anyhow!("Expected plain_text in the first paragraph_line"))?;
+        assert_eq!(plain_text1.as_str(), "This code prints \"Hello world\":");
+    
+        let code_block = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected code_block, but found none"))?;
+        assert_eq!(code_block.as_rule(), Rule::code_block);
+        let mut code_block_inner = code_block.into_inner();
+    
+        let code_lang = code_block_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected code_lang, but found none"))?;
+        assert_eq!(code_lang.as_rule(), Rule::code_lang);
+        assert_eq!(code_lang.as_str(), "py");
+    
+        let code_content = code_block_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected code_content, but found none"))?;
+        assert_eq!(code_content.as_rule(), Rule::code_content);
+        assert_eq!(code_content.as_str(), "print(\"Hello world!\")");
+    
+        let empty_line2 = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected empty_line, but found none"))?;
+        assert_eq!(empty_line2.as_rule(), Rule::empty_line);
+    
+        let paragraph2 = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected paragraph, but found none"))?;
+        assert_eq!(paragraph2.as_rule(), Rule::paragraph);
+        let mut paragraph2_inner = paragraph2.into_inner();
+    
+        let paragraph_line2 = paragraph2_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected paragraph_line, but found none"))?;
+        assert_eq!(paragraph_line2.as_rule(), Rule::paragraph_line);
+        let mut paragraph_line2_inner = paragraph_line2.into_inner();
+        let plain_text2 = paragraph_line2_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected plain_text, but found none"))?;
+        assert_eq!(plain_text2.as_str(), "This is ");
+        let bold = paragraph_line2_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected bold content, but found none"))?;
+        assert_eq!(bold.as_rule(), Rule::bold);
+        let bold_content = bold.into_inner().next().ok_or_else(|| anyhow!("Expected bold content text"))?;
+        assert_eq!(bold_content.as_str(), "bold");
+        let plain_text3 = paragraph_line2_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected plain_text, but found none"))?;
+        assert_eq!(plain_text3.as_str(), " text!");
+    
+        let paragraph_line3 = paragraph2_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected paragraph_line, but found none"))?;
+        assert_eq!(paragraph_line3.as_rule(), Rule::paragraph_line);
+        let plain_text4 = paragraph_line3
+            .into_inner()
+            .next()
+            .ok_or_else(|| anyhow!("Expected plain_text, but found none"))?;
+        assert_eq!(plain_text4.as_str(), "That's all. Bye!");
+    
+        println!("{:#?}", markdown_inner);
+        let eoi = markdown_inner
+            .next()
+            .ok_or_else(|| anyhow!("Expected end of input, but found none"))?;
+        assert_eq!(eoi.as_rule(), Rule::EOI);
+    
+        Ok(())
+    }    
 }
 
 fn get_headers_start_length(rule: Rule) -> usize {

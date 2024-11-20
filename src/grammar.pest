@@ -19,7 +19,7 @@ horizontal_rule = {
 }
 
 code_block = {
-    "```" ~ (code_lang ~ ws* ~ NEWLINE)? ~ code_content ~ NEWLINE? ~ "```"
+    "```" ~ (code_lang ~ ws* ~ NEWLINE)? ~ code_content ~ NEWLINE? ~ "```" ~ NEWLINE?
 }
 
 code_lang = {
