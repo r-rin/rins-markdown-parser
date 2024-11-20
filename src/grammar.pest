@@ -102,7 +102,7 @@ escaped = {
 }
 
 plain_text = @{
-    !exclude_block_elems ~ (!exclude_styles ~ char)+
+    !exclude_block_elems ~ (!exclude_styles ~ ANY)+
 }
 
 char = {
@@ -111,6 +111,7 @@ char = {
 
 exclude_styles = _{
   NEWLINE
+  | escaped
   | "*"
   | "~~"
   | "_"
@@ -119,8 +120,7 @@ exclude_styles = _{
 }
 
 exclude_block_elems = _{
-  escaped
-  | heading
+  heading
   | quote
   | code_block
   | horizontal_rule
