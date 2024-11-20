@@ -221,12 +221,11 @@ fn parse_heading(pair: Pair<Rule>) -> Result<String, ErrorParse> {
 
 pub fn parse_markdown(input: &str) -> Result<Pairs<Rule>, ErrorParse> {
     return Grammar::parse(Rule::markdown, input)
-    .map_err(|err| ErrorParse::ParsingError(err.to_string()));
+        .map_err(|err| ErrorParse::ParsingError(err.to_string()));
 }
 
 pub fn parse_by_rule(rule: Rule, input: &str) -> Result<Pairs<Rule>, ErrorParse> {
-    return Grammar::parse(rule, input)
-    .map_err(|err| ErrorParse::ParsingError(err.to_string()));
+    return Grammar::parse(rule, input).map_err(|err| ErrorParse::ParsingError(err.to_string()));
 }
 
 pub fn md_to_html_file(md_path: &Path, html_path: &Path) -> Result<(), ErrorParse> {
