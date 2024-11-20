@@ -132,18 +132,18 @@ heading = _{
   | heading3
 }
 
-heading1 = @{
-    "#" ~ ws ~ single_line_text
+heading1 = {
+    "#" ~ ws ~ single_line_text ~ NEWLINE 
 }
 
-heading2 = @{
-    "##" ~ ws ~ single_line_text
+heading2 = {
+    "##" ~ ws ~ single_line_text ~ NEWLINE 
 }
 
-heading3 = @{
-    "###" ~ ws ~ single_line_text
+heading3 = {
+    "###" ~ ws ~ single_line_text ~ NEWLINE 
 }
 
-single_line_text = ${
-    (!NEWLINE ~ ANY)+ ~ NEWLINE
+single_line_text = {
+    (!NEWLINE ~ ANY)+
 }
