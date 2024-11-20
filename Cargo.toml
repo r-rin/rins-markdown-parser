@@ -3,7 +3,10 @@ name = "rins_markdown_parser"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+authors = ["Rafikov Rinat <r.rafikov@ukma.edu.ua>"]
 description = "Simple markdown parser written on Rust"
+homepage = "https://github.com/r-rin/rins-markdown-parser"
+repository = "https://github.com/r-rin/rins-markdown-parser"
 
 [dependencies]
 anyhow = "1.0.93"

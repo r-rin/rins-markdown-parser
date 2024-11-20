@@ -6,5 +6,5 @@ This code prints "Hello world":
 print("Hello world!")
 ```
 
-This is **bold _bold and italic_ ~~[click this!](https://google.com)~~** text!
+This is **\*bold _bold and italic_ ~~[click this!](https://google.com)~~** text!
 That's all. Bye!

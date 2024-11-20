@@ -1,11 +1,20 @@
+// Grammar that describes a markdown syntax. 
+// Author: r-rin
+
+// Whitespace rules, allowing space or tabs as separators.
 ws = _{ SPACE_SEPARATOR | "\t" }
 
+// The main grammar for Markdown, starting with the start of input (SOI) and ending at end of input (EOI).
+// Consists of blocks separated by zero or more empty lines.
 markdown = { SOI ~ (block ~ empty_line*)* ~ EOI }
 
+// Defines an empty line, which is just a newline.
 empty_line = {
 	NEWLINE
 }
 
+// A block is any of the major Markdown constructs: headings, quotes, code blocks, horizontal rules, or paragraphs.
+// Blocks can't be used as inline elements like bold, italic, links and etc. 
 block = _{
   heading
   | quote
@@ -14,101 +23,134 @@ block = _{
   | paragraph
 }
 
+// A horizontal rule, which is three or more dashes (`---`), asterisks (`***`), or en-dashes (`–––`).
+// It can optionally be followed by whitespace and ends with a newline or the end of input.
 horizontal_rule = {
     ("---"|"***"|"–––") ~ ws* ~ (NEWLINE | EOI)
 }
 
+// A fenced code block, which starts with three backticks (` ``` `).
+// Optionally includes a programming language (code_lang) after the opening backticks.
+// The content of the code block (code_content) is followed by closing backticks.
 code_block = {
     "```" ~ (code_lang ~ ws* ~ NEWLINE)? ~ code_content ~ NEWLINE? ~ "```" ~ NEWLINE?
 }
 
+// The language of the code block, consisting of alphabetic characters and optional whitespace.
 code_lang = {
     ws* ~ ('a'..'z' | 'A'..'Z')+
 }
 
+// The content of the code block, which continues until it encounters the closing backticks.
+// Ensures that it does not contain the closing sequence of backticks prematurely.
 code_content = {
     (!(NEWLINE? ~ "```") ~ ANY)+
 }
 
+// A blockquote in Markdown, which starts with `>` followed by a paragraph.
 quote =  {
     ">" ~ paragraph
 }
 
+// A paragraph consists of one or more lines of text.
 paragraph = {
 	paragraph_line+ 
 }
 
+// A paragraph line consists of one or more text elements, optionally followed by a paragraph break.
 paragraph_line = {
 	text+ ~ paragraph_break?
 }
 
+// A paragraph break is just a newline.
 paragraph_break = _{
     NEWLINE
 }
 
+// Defines the possible types of text within a paragraph: plain text, escaped characters, or styled text.
 text = _{
     plain_text
   | escaped
   | styled_text
 }
 
+// Styled text includes various formatting options: bold, underline, italic, strikethrough, inline images, and inline links.
+// Styling can be nested and may include escaped characters within.
 styled_text = _{
     escaped* ~ (bold | underline | italic | strikethrough | inline_image | inline_link | content) ~ escaped*
 }
 
+// Inline images, written as `![alt text](url)` in Markdown.
+// They contain alternative text in case image within the url or path is inaccessible.
 inline_image = {
 	"![" ~ alt_text ~ "](" ~ url ~ ")"
 }
 
+// Inline links, written as `[link text](url)` in Markdown.
+// They contain a link (`url`) and a text that replaces the link (`link_text`).
 inline_link = {
 	"[" ~ link_text ~ "](" ~ url ~ ")"
 }
 
+// The text that appears as the clickable link within square brackets, excluding the closing `]`.
 link_text = {
 	(!"]" ~ ANY)+
 }
 
+// The alternative text for an image, appearing within the square brackets of an inline image.
+// It reads any characters until it reaches ']' symbol.
 alt_text = {
 	(!"]" ~ ANY)+
 }
 
+// The URL for inline links or images, enclosed in parentheses and excluding the closing `)`.
+// It reads any characters until it reaches ')' symbol.
 url = {
 	(!")" ~ ANY)+
 }
 
+// Strikethrough text, enclosed in double tildes (`~~`).
 strikethrough = {
     "~~" ~ (styled_text)+ ~ "~~"
 }
 
+// Underlined text, enclosed in double underscores (`__`).
 underline = {
     "__" ~ (styled_text)+ ~ "__"
 }
 
+// Bold text, enclosed in double asterisks (`**`).
 bold = {
     "**" ~ (styled_text)+ ~ "**"
 }
 
+// Italicized text, enclosed in either single asterisks (`*`) or single underscores (`_`).
 italic = {
     ("*" ~ (styled_text)+ ~ "*")
   | ("_" ~ (styled_text)+ ~ "_")
 }
 
+// Content is any text not excluded by styling or block-level rules, used as plain text within styled elements.
 content = @{
     (!(exclude_styles | exclude_block_elems) ~ ANY)+
 }
 
+// Escaped characters, which are prefixed with a backslash (`\`) to include special characters in the text.
 escaped = {
     "\\" ~ (!ws ~ char)
 }
 
+// Plain text excludes block-level elements and styled text, used for unformatted text in paragraphs.
 plain_text = @{
     !exclude_block_elems ~ (!exclude_styles ~ ANY)+
 }
 
+// Matches any single character.
 char = {
 	ANY
 }
 
+// Defines the characters or elements that describe when a styled text starts.
 exclude_styles = _{
   NEWLINE
   | escaped
@@ -119,6 +161,7 @@ exclude_styles = _{
   | inline_image
 }
 
+// Excludes block-level elements like headings, quotes, code blocks, and horizontal rules.
 exclude_block_elems = _{
   heading
   | quote
@@ -126,24 +169,29 @@ exclude_block_elems = _{
   | horizontal_rule
 }
 
+// Defines Markdown headings, which come in three levels (H1, H2, H3).
 heading = _{
     heading1
   | heading2
   | heading3
 }
 
+// A level-1 heading, starting with `#` followed by a single line of text.
 heading1 = {
     "#" ~ ws ~ single_line_text ~ NEWLINE?
 }
 
+// A level-2 heading, starting with `##` followed by a single line of text.
 heading2 = {
     "##" ~ ws ~ single_line_text ~ NEWLINE? 
 }
 
+// A level-3 heading, starting with `###` followed by a single line of text.
 heading3 = {
     "###" ~ ws ~ single_line_text ~ NEWLINE?
 }
 
+// A single line of text, not containing a newline.
 single_line_text = {
     (!NEWLINE ~ ANY)+
 }
