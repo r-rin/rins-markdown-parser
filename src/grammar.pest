@@ -97,8 +97,8 @@ content = @{
     (!(exclude_styles | exclude_block_elems) ~ ANY)+
 }
 
-escaped = @{
-    "\\" ~ (!ws ~ ANY)
+escaped = {
+    "\\" ~ (!ws ~ char)
 }
 
 plain_text = @{
