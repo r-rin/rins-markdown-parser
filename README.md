@@ -3,6 +3,9 @@
 > [!IMPORTANT]
 > This parser uses not the most ideal grammar, so it is recommended **to avoid** using any complex or ambiguous combinations of styles, etc. For example, if you use bold and italic styles at the same time, then it is recommended to use underscores (`_italic_`) for italic styling.
  
+**Crates.io**: [click here](https://crates.io/crates/rins_markdown_parser)
+**Github**: [click here](https://github.com/r-rin/rins-markdown-parser)
+
 ---
 
 This is a Rust library that parses Markdown text, covering essential Markdown syntax elements such as headers, lists, emphasis, links, code blocks, and more. It parses Markdown into an Abstract Syntax Tree (AST), making it easier to manipulate, transform, or render Markdown content in various formats.

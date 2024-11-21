@@ -30,13 +30,13 @@ pub enum ErrorParse {
 }
 
 /// Converts provided `text` in markdown format to HTML, returning a vector of HTML lines.
-/// 
+///
 /// # Arguments
 /// * `text` - A string slice containing the markdown content. All lines in the text are separated by new line breaks.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing either a vector of HTML lines or a `ErrorParse` if the parsing fails.
 pub fn str_to_html(text: &str) -> Result<Vec<String>, ErrorParse> {
@@ -57,13 +57,13 @@ pub fn str_to_html(text: &str) -> Result<Vec<String>, ErrorParse> {
 }
 
 /// Converts a `pest::iterators::Pair` representing a single rule into an HTML string.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the parsed rule to convert.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing either the corresponding HTML string or an `ErrorParse` if the rule is unknown or an error occurs.
 pub fn to_html(pair: Pair<Rule>) -> Result<String, ErrorParse> {
@@ -106,13 +106,13 @@ pub fn to_html(pair: Pair<Rule>) -> Result<String, ErrorParse> {
 }
 
 /// Parses an escaped character from the markdown syntax, such as escaped special characters.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the escaped character rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing the encoded HTML representation of the escaped character.
 fn parse_escaped_char(pair: Pair<Rule>) -> Result<String, ErrorParse> {
@@ -129,13 +129,13 @@ fn parse_escaped_char(pair: Pair<Rule>) -> Result<String, ErrorParse> {
 }
 
 /// Parses styled text such as bold, italic, strikethrough, or underline in the markdown input.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the styled text rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing the HTML string of the styled content.
 fn parse_styled_text(pair: Pair<Rule>) -> Result<String, ErrorParse> {
@@ -151,13 +151,13 @@ fn parse_styled_text(pair: Pair<Rule>) -> Result<String, ErrorParse> {
 }
 
 /// Parses an inline image (e.g., `![alt_text](url)`) in the markdown input.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the inline image rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing a tuple of the encoded alt text and URL of the image.
 fn parse_inline_image(pair: Pair<Rule>) -> Result<(String, String), ErrorParse> {
@@ -182,13 +182,13 @@ fn parse_inline_image(pair: Pair<Rule>) -> Result<(String, String), ErrorParse> 
 }
 
 /// Parses an inline link (e.g., `[link_text](url)`) in the markdown input.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the inline link rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing a tuple of the encoded link text and URL.
 fn parse_inline_link(pair: Pair<Rule>) -> Result<(String, String), ErrorParse> {
@@ -212,15 +212,15 @@ fn parse_inline_link(pair: Pair<Rule>) -> Result<(String, String), ErrorParse> {
     Ok((link_text_encoded, url_string))
 }
 
-/// Parses a paragraph from the markdown input. 
+/// Parses a paragraph from the markdown input.
 /// A paragraph is a collection of paragraph lines. Line containt either a plain_text, escaped character or styled_text.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the paragraph rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing the HTML representation of the entire paragraph.
 fn parse_paragraph(pair: Pair<Rule>) -> Result<String, ErrorParse> {
@@ -255,13 +255,13 @@ fn parse_paragraph(pair: Pair<Rule>) -> Result<String, ErrorParse> {
 }
 
 /// Parses a blockquote (e.g., `> quote text`) from the markdown input.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the blockquote rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing the HTML representation of the blockquote.
 fn parse_quote(pair: Pair<Rule>) -> Result<String, ErrorParse> {
@@ -274,13 +274,13 @@ fn parse_quote(pair: Pair<Rule>) -> Result<String, ErrorParse> {
 
 /// Parses a code block from the markdown input.
 /// Code block always has a content and may have a language of the code.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the code block rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing a tuple with the language and the HTML-encoded code content.
 fn parse_code_block(pair: Pair<Rule>) -> Result<(String, String), ErrorParse> {
@@ -304,15 +304,14 @@ fn parse_code_block(pair: Pair<Rule>) -> Result<(String, String), ErrorParse> {
     Ok((code_encoded, content_encoded))
 }
 
-
 /// Parses a heading (e.g., `# Heading 1`) from the markdown input.
-/// 
+///
 /// # Arguments
 /// * `pair` - A `pest::iterators::Pair` representing the heading rule.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing the HTML-encoded heading text.
 fn parse_heading(pair: Pair<Rule>) -> Result<String, ErrorParse> {
@@ -329,13 +328,13 @@ fn parse_heading(pair: Pair<Rule>) -> Result<String, ErrorParse> {
 }
 
 /// Parses the given `input` markdown string and returns a `pest::iterators::Pairs` of rules.
-/// 
+///
 /// # Arguments
 /// * `input` - A string containing the markdown content.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing either the parsed `pest::iterators::Pairs` or an `ErrorParse` if the parsing fails.
 pub fn parse_markdown(input: &str) -> Result<Pairs<Rule>, ErrorParse> {
@@ -344,14 +343,14 @@ pub fn parse_markdown(input: &str) -> Result<Pairs<Rule>, ErrorParse> {
 }
 
 /// Parses the `input` string according to a specific rule and returns the resulting pairs.
-/// 
+///
 /// # Arguments
 /// * `rule` - The rule to parse the input with.
 /// * `input` - A string containing the input to parse.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result containing the parsed `pest::iterators::Pairs` or an `ErrorParse` if the parsing fails.
 pub fn parse_by_rule(rule: Rule, input: &str) -> Result<Pairs<Rule>, ErrorParse> {
@@ -359,7 +358,7 @@ pub fn parse_by_rule(rule: Rule, input: &str) -> Result<Pairs<Rule>, ErrorParse>
 }
 
 /// Converts the markdown file at `md_path` to an HTML file at `html_path`.
-/// 
+///
 /// # Arguments
 /// * `md_path` - The path to the markdown file.
 /// * `html_path` - The path where the generated HTML file will be saved.
@@ -367,11 +366,11 @@ pub fn parse_by_rule(rule: Rule, input: &str) -> Result<Pairs<Rule>, ErrorParse>
 /// # Behavior
 /// - If file at `html_path` exists it overwrites content in it.
 /// - If file at `html_path` does not exist, then it creates it and writes the result in it.
-/// 
+///
 /// # Errors
 /// - Returns an `ErrorParse::FileError` if there's an error while file r/w operation.
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result indicating success or an `ErrorParse` if a file operation fails.
 pub fn md_to_html_file(md_path: &Path, html_path: &Path) -> Result<(), ErrorParse> {
@@ -406,13 +405,13 @@ pub fn md_to_html_file(md_path: &Path, html_path: &Path) -> Result<(), ErrorPars
 }
 
 /// Converts the given markdown `text` to HTML and prints it to the console.
-/// 
+///
 /// # Arguments
 /// * `text` - A string containing the markdown content.
 ///
 /// # Errors
 /// - Returns an `ErrorParse::ParsingError` if there's an error during a parsing process.
-/// 
+///
 /// # Returns
 /// A result indicating success or an `ErrorParse` if the parsing fails.
 pub fn parse_to_console(text: &str) -> Result<(), ErrorParse> {
