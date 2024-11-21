@@ -1,6 +1,6 @@
 [package]
 name = "rins_markdown_parser"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 authors = ["Rafikov Rinat <r.rafikov@ukma.edu.ua>"]
